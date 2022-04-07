@@ -18,25 +18,37 @@ model = tf.keras.models.load_model('./MODEL')
 
 # ----------- model summary ------------------
 
-#model.summary()
+# model.summary()
 
 
 # ----------------- predict class of new data ----------------
 
+test_path = "./testImages"
+test_images = [test_path + "/" + name for name in os.listdir(test_path)]
+images = []
+predictions = []
 
-test_path = "./testIMG.jpg"
+for image_name in test_images:
+    img = tf.keras.utils.load_img(
+        image_name, target_size=(img_height, img_width)
+    )
+    img_array = tf.keras.utils.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0)
 
-img = tf.keras.utils.load_img(
-    test_path, target_size=(img_height, img_width)
-)
-img_array = tf.keras.utils.img_to_array(img)
-img_array = tf.expand_dims(img_array, 0) # Create a batch
+    images.append(img)
 
-predictions = model.predict(img_array)
-score = tf.nn.softmax(predictions[0])
+    predictions.append(model.predict(img_array)[0])
 
-print(
-    "This image most likely belongs to {} with a {:.2f} percent confidence."
-    .format(class_names[np.argmax(score)], 100 * np.max(score))
-)
+scores = []
+for prediction in predictions:
+    scores.append(tf.nn.softmax(prediction))
 
+for i in range(0, len(images), 9):
+    for j in range(i, i+9):
+        if j >= len(images):
+            break
+        plt.subplot(3, 3, j - i + 1)
+        plt.imshow(images[j])
+        plt.title(class_names[np.argmax(scores[j])] + " " + str(round(max(100 * np.max(scores[j]), 2))) + "%")
+        plt.axis("off")
+    plt.show()
