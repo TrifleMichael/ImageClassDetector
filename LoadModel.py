@@ -8,22 +8,31 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 
-# ---------- loading model ---------------------
 
-class_names = ['BMW', 'CocaCola', 'Electrolux']
-batch_size = 32
+# ---------- loading model ---------------------
+from Settings import MODEL_PATH, TEST_PATH
+
 img_height = 256
 img_width = 256
-model = tf.keras.models.load_model('./MODEL')
+model = tf.keras.models.load_model(MODEL_PATH)
+
+# ----------- import class names -----------------
+
+f = open("class_names.txt", "r")
+class_names_string = f.read()
+class_names_string = class_names_string.split("\'")
+class_names = []
+for i in range(1, len(class_names_string)-1, 2):
+    class_names.append(class_names_string[i])
 
 # ----------- model summary ------------------
 
-# model.summary()
-
+#model.summary()
 
 # ----------------- predict class of new data ----------------
 
-test_path = "./testImages"
+
+test_path = TEST_PATH
 test_images = [test_path + "/" + name for name in os.listdir(test_path)]
 images = []
 predictions = []
@@ -50,3 +59,4 @@ for i in range(0, len(images), 9):
         plt.title(class_names[np.argmax(scores[j])] + " " + str(round(max(100 * np.max(scores[j]), 2))) + "%")
         plt.axis("off")
     plt.show()
+
