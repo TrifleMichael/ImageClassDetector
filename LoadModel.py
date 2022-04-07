@@ -44,9 +44,7 @@ for prediction in predictions:
     scores.append(tf.nn.softmax(prediction))
 
 for i in range(0, len(images), 9):
-    for j in range(i, i+9):
-        if j >= len(images):
-            break
+    for j in range(i, max(i+9, len(images))):
         plt.subplot(3, 3, j - i + 1)
         plt.imshow(images[j])
         plt.title(class_names[np.argmax(scores[j])] + " " + str(round(max(100 * np.max(scores[j]), 2))) + "%")
